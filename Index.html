@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Leave Desk · Portfolio demo</title>
+<meta name="description" content="A leave management system built with Google Apps Script and Sheets. This page is an interactive demo with fictional data.">
+<style>
+  :root{--bg:#0B1220;--surface:#121C30;--surface2:#182540;--text:#E8EEF9;--muted:#8FA0BF;--line:#22314F;--blue:#2390F8;--blue2:#1B74CF;--ok:#34D399;--warn:#FBBF24;--bad:#F87171;--shadow:0 8px 30px rgba(0,0,0,.35)}
+  [data-theme="light"]{--bg:#F2F6FC;--surface:#FFFFFF;--surface2:#EAF1FB;--text:#0B1220;--muted:#5B6B88;--line:#D9E3F2;--shadow:0 8px 30px rgba(20,60,120,.10)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"Segoe UI",Roboto,Arial,sans-serif;font-size:15px;line-height:1.45}
+  .banner{background:var(--blue);color:#fff;text-align:center;font-size:13px;padding:7px 12px}
+  .banner button{background:rgba(255,255,255,.2);border:0;color:#fff;border-radius:8px;padding:3px 10px;margin-left:8px;cursor:pointer;font:inherit;font-size:12px}
+  .wrap{max-width:1150px;margin:0 auto;padding:16px}
+  header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:6px 0 14px}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px}
+  .brand svg{width:34px;height:34px}
+  .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .seg{display:inline-flex;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px;gap:2px}
+  .seg button{background:transparent;border:0;color:var(--muted);padding:8px 14px;border-radius:9px;cursor:pointer;font:inherit;font-size:13px;font-weight:600}
+  .seg button.on{background:var(--blue);color:#fff}
+  .iconbtn{background:var(--surface);border:1px solid var(--line);color:var(--text);border-radius:10px;min-width:36px;height:36px;cursor:pointer;padding:0 10px;font:inherit}
+  .avatar{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:700}
+  .hero{display:flex;gap:14px;align-items:flex-end;margin:4px 0 18px}
+  .flo{width:72px;flex:none;animation:floaty 3s ease-in-out infinite}
+  @keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+  .bubble{background:var(--surface);border:1px solid var(--line);border-radius:16px 16px 16px 4px;padding:12px 16px;box-shadow:var(--shadow);max-width:640px}
+  .bubble b{color:var(--blue)}
+  .grid{display:grid;gap:14px}
+  .tiles,.kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+  .two{grid-template-columns:1.3fr 1fr;margin-top:14px}.two.even{grid-template-columns:1fr 1fr}
+  @media(max-width:820px){.two,.two.even{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:var(--shadow)}
+  .card h3{margin:0 0 12px;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .tile{cursor:pointer}.tile.sel{outline:2px solid var(--blue)}
+  .tile .name,.kpi .l{color:var(--muted);font-size:13px}
+  .tile .big,.kpi .n{font-size:30px;font-weight:700;margin:4px 0}
+  .kpi.hl{background:var(--blue);border-color:var(--blue);color:#fff}.kpi.hl .l{color:rgba(255,255,255,.88)}
+  .bar{height:6px;border-radius:99px;background:var(--surface2);overflow:hidden;margin:8px 0}
+  .bar i{display:block;height:100%;background:var(--blue)}
+  .meta{display:flex;justify-content:space-between;color:var(--muted);font-size:12px}
+  .sub{color:var(--muted);font-size:12.5px}
+  label{display:block;font-size:12px;color:var(--muted);margin:12px 0 4px;text-transform:uppercase;letter-spacing:.04em}
+  select,input,textarea{width:100%;background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:10px;padding:10px 12px;font:inherit}
+  textarea{min-height:70px;resize:vertical}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  .dur{display:flex;justify-content:space-between;background:var(--surface2);border:1px dashed var(--line);border-radius:10px;padding:10px 12px;margin-top:12px}
+  .chk{display:flex;align-items:center;gap:8px;margin-top:10px;text-transform:none;letter-spacing:0;font-size:14px;color:var(--text)}.chk input{width:auto}
+  .btn{background:var(--blue);color:#fff;border:0;border-radius:10px;padding:12px 18px;font-weight:600;cursor:pointer;width:100%;margin-top:16px;font:inherit}
+  .btn:hover{background:var(--blue2)}
+  .b{border:0;border-radius:9px;padding:8px 14px;font-weight:600;cursor:pointer;font:inherit;font-size:13px}
+  .b-ok{background:var(--blue);color:#fff}.b-no{background:transparent;color:var(--bad);border:1px solid var(--bad)}.b-soft{background:var(--surface2);color:var(--text)}
+  .mini{background:var(--surface2);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;margin-top:6px}
+  .item{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 0;border-top:1px solid var(--line)}
+  .item:first-child{border-top:0}
+  .pill{font-size:11px;font-weight:700;padding:4px 10px;border-radius:99px;white-space:nowrap}
+  .p-Approved{background:rgba(52,211,153,.16);color:var(--ok)}
+  .p-bad{background:rgba(248,113,113,.16);color:var(--bad)}
+  .p-pend{background:rgba(251,191,36,.16);color:var(--warn)}
+  .p-final{background:rgba(35,144,248,.16);color:var(--blue)}
+  .flag{font-size:12px;color:var(--warn);margin-top:3px}
+  .err{color:var(--bad);font-size:13px;margin-top:10px;display:none}
+  .act{display:none;margin-top:8px}
+  .bars .bb{margin:10px 0}.bars .t{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}
+  .bars .tr{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden}.bars .tr i{display:block;height:100%;background:var(--blue)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{color:var(--muted);font-weight:600;font-size:12px;text-align:left;text-transform:uppercase;letter-spacing:.04em;padding:8px 6px}
+  td{padding:10px 6px;border-top:1px solid var(--line)}.r{text-align:right}
+  .scroll{overflow-x:auto}
+  .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--blue);color:#fff;padding:12px 18px;border-radius:12px;box-shadow:var(--shadow);display:none;z-index:99;max-width:90%}
+  footer{color:var(--muted);font-size:12.5px;text-align:center;padding:26px 8px 40px}
+  /* tour */
+  .spot{position:relative;z-index:41;box-shadow:0 0 0 3px var(--blue),0 0 26px rgba(35,144,248,.6)!important;border-radius:16px;scroll-margin-top:70px}
+  #tourBack{position:fixed;inset:0;background:rgba(5,10,20,.74);z-index:40}
+  #tour{position:fixed;left:50%;bottom:14px;transform:translateX(-50%);width:min(580px,calc(100% - 24px));z-index:50;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;box-shadow:var(--shadow);display:flex;gap:12px;align-items:flex-start}
+  #tour .flo{width:56px}#tour .tt{font-weight:700;font-size:16px;margin-bottom:4px}#tour .tx{color:var(--muted);font-size:14px}
+  #tour .dots{display:flex;gap:5px;margin:10px 0}#tour .dots i{width:7px;height:7px;border-radius:50%;background:var(--line)}#tour .dots i.on{background:var(--blue);width:18px;border-radius:99px}
+  #tour .tb{display:flex;gap:8px;justify-content:flex-end}#tour .tb button{border:0;border-radius:10px;padding:9px 16px;font-weight:600;cursor:pointer;font:inherit;font-size:14px}
+  #tour .nx{background:var(--blue);color:#fff}#tour .bk,#tour .cl{background:var(--surface2);color:var(--text)}
+  /* inbox drawer */
+  #drawer{position:fixed;top:0;right:0;height:100%;width:min(520px,100%);background:var(--surface);border-left:1px solid var(--line);box-shadow:var(--shadow);z-index:60;transform:translateX(105%);transition:transform .25s;display:flex;flex-direction:column}
+  #drawer.open{transform:none}
+  #drawer .dh{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font-weight:700}
+  #drawer .dl{overflow:auto;flex:1;padding:8px 16px}
+  .mail{padding:10px 0;border-top:1px solid var(--line);cursor:pointer}.mail:first-child{border-top:0}
+  .mail .s{font-weight:600}.mail .t2{color:var(--muted);font-size:12.5px}
+  .mailview{background:#0B1220;padding:14px;border-radius:12px;margin-top:8px}
+  .mailview .em{max-width:480px;margin:auto;background:#121C30;border-radius:14px;padding:20px;color:#E8EEF9}
+  .mailview .em h2{margin:6px 0 10px;font-size:19px;color:#fff}.mailview .em p{color:#C5D1E8;margin:0 0 12px}
+  .mailview .em .k{color:#8FA0BF;padding:7px 0;border-top:1px solid #22314F;width:36%;vertical-align:top}.mailview .em .v{padding:7px 0;border-top:1px solid #22314F}
+  .mailview .em .cta{display:inline-block;background:#2390F8;color:#fff;border-radius:9px;padding:10px 18px;font-weight:600;margin-top:14px}
+</style>
+</head>
+<body>
+<div class="banner">Interactive portfolio demo · every name and number here is fictional <button onclick="location.reload()">Reset demo</button></div>
+<div class="wrap" id="app"></div>
+<div id="drawer"></div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------- helpers ---------- */
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const iso=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const parse=s=>{const p=s.split('-');return new Date(+p[0],+p[1]-1,+p[2]);};
+const addDays=(s,n)=>{const d=parse(s);d.setDate(d.getDate()+n);return iso(d);};
+const fmt=s=>parse(s).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+const long=s=>parse(s).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short',year:'numeric'});
+const rng=(a,b)=>a===b?fmt(a):fmt(a)+' – '+fmt(b);
+const num=n=>n%1?n.toFixed(1):n;
+const sum=a=>a.reduce((x,r)=>x+r.days,0);
+const HOL=['01-01','05-01','05-27','06-12','10-01','12-25','12-26'];   // fixed-date Nigerian public holidays
+const isWork=s=>{const w=parse(s).getDay();return w!==0&&w!==6&&HOL.indexOf(s.slice(5))===-1;};
+const workDays=(a,b)=>{let n=0;for(let d=a;d<=b;d=addDays(d,1))if(isWork(d))n++;return n;};
+const endFrom=(s,len)=>{let d=s,n=1;while(n<len){d=addDays(d,1);if(isWork(d))n++;}return d;};
+const nextWork=s=>{let d=addDays(s,1);while(!isWork(d))d=addDays(d,1);return d;};
+const TODAY=iso(new Date()), YEAR=TODAY.slice(0,4);
+
+/* ---------- fictional data ---------- */
+const PEOPLE=[
+  {id:1,name:'Chidera Eze',dept:'Product'},{id:2,name:'Tunde Bello',dept:'Engineering'},{id:3,name:'Ngozi Adeyemi',dept:'People & Culture'},
+  {id:4,name:'Emeka Nwosu',dept:'Operations'},{id:5,name:'Fatima Yusuf',dept:'Finance'},{id:6,name:'Kelechi Obi',dept:'Sales'},
+  {id:7,name:'Aisha Danjuma',dept:'Engineering'},{id:8,name:'Segun Alabi',dept:'Operations'},{id:9,name:'Zainab Lawal',dept:'Sales'},
+  {id:10,name:'Ifeoma Okeke',dept:'Product'},{id:11,name:'Dayo Coker',dept:'Finance'},{id:12,name:'Bola Ajayi',dept:'Engineering'}];
+const ME=PEOPLE[0];
+const TYPES=[{name:'Annual Leave',ent:20,reason:false},{name:'Sick Leave',ent:12,reason:false},{name:'Compassionate Leave',ent:3,reason:true},{name:'Unpaid Leave',ent:null,reason:true}];
+const PEND=['Pending','Pending Final Approval','Changes Requested'];
+const who=id=>PEOPLE.find(p=>p.id===id);
+let seq=0;const reqs=[],mails=[];
+function mk(pid,type,off,len,status,x){
+  let s=addDays(TODAY,off);while(!isWork(s))s=addDays(s,1);
+  reqs.push(Object.assign({id:'LV-'+YEAR+'-'+String(++seq).padStart(4,'0'),pid,type,start:s,end:endFrom(s,len),days:len,status,reason:'',cover:'',comment:'',submitted:addDays(TODAY,off-14)},x||{}));
+}
+[[2,'Annual Leave',-340,5],[4,'Sick Leave',-300,2],[5,'Annual Leave',-260,10],[6,'Compassionate Leave',-230,3],[7,'Annual Leave',-200,4],
+ [8,'Sick Leave',-170,1],[9,'Annual Leave',-150,7],[10,'Annual Leave',-120,3],[3,'Sick Leave',-100,2],[11,'Annual Leave',-80,5],[12,'Annual Leave',-60,2],
+ [2,'Sick Leave',-45,1],[4,'Annual Leave',-40,6],[5,'Annual Leave',-25,3],[6,'Sick Leave',-12,2],[1,'Annual Leave',-200,5],[1,'Sick Leave',-60,2],
+ [7,'Annual Leave',-1,4],[9,'Sick Leave',0,2],[8,'Annual Leave',9,5],[12,'Annual Leave',20,3],[3,'Annual Leave',25,10],[1,'Annual Leave',30,3]]
+ .forEach(a=>mk(a[0],a[1],a[2],a[3],'Approved'));
+mk(2,'Annual Leave',14,4,'Pending',{reason:'Family event',submitted:addDays(TODAY,-3)});
+mk(10,'Annual Leave',6,2,'Pending',{submitted:addDays(TODAY,-1)});
+mk(11,'Annual Leave',40,12,'Pending Final Approval',{reason:'Extended trip',submitted:addDays(TODAY,-6),flags:'Over 10 days: final approval needed'});
+mk(6,'Compassionate Leave',3,2,'Pending',{reason:'Family bereavement',submitted:TODAY});
+mk(1,'Annual Leave',45,2,'Pending',{submitted:addDays(TODAY,-2)});
+mk(1,'Annual Leave',60,2,'Changes Requested',{comment:'Please move these dates, the team has a deadline that week.',submitted:addDays(TODAY,-5)});
+
+/* ---------- state ---------- */
+let view='me',months=1,SEL='Annual Leave',EDIT=null,OPEN=null,tourI=0,tourFirst=false;
+const tdone=(()=>{try{return localStorage.getItem('ld-tour')==='1';}catch(e){return false;}})();
+try{const t=localStorage.getItem('ld-theme');if(t)document.documentElement.setAttribute('data-theme',t);}catch(e){}
+function toggleTheme(){const n=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);try{localStorage.setItem('ld-theme',n);}catch(e){}}
+function toast(m){const t=$('toast');t.textContent=m;t.style.display='block';clearTimeout(toast.h);toast.h=setTimeout(()=>t.style.display='none',3600);}
+
+const logo=()=>'<svg viewBox="0 0 40 40"><rect width="40" height="40" rx="11" fill="#2390F8"/><path d="M11 21l6 6 12-13" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const flo=()=>'<svg class="flo" viewBox="0 0 80 90"><line x1="40" y1="6" x2="40" y2="16" stroke="#2390F8" stroke-width="3"/><circle cx="40" cy="6" r="4" fill="#2390F8"/><rect x="10" y="16" width="60" height="50" rx="18" fill="#2390F8"/><rect x="18" y="26" width="44" height="28" rx="12" fill="#0B1220"/><circle cx="31" cy="39" r="5" fill="#fff"/><circle cx="49" cy="39" r="5" fill="#fff"/><path d="M33 48q7 5 14 0" stroke="#fff" stroke-width="2.5" fill="none" stroke-linecap="round"/><rect x="22" y="68" width="36" height="16" rx="8" fill="#1B74CF"/></svg>';
+const pillCls=s=>s==='Approved'?'p-Approved':(['Declined','Cancelled','Withdrawn'].includes(s)?'p-bad':(s==='Pending Final Approval'?'p-final':'p-pend'));
+const pillTxt=s=>s==='Pending Final Approval'?'FINAL APPROVAL':s.toUpperCase();
+
+/* ---------- simulated emails ---------- */
+function mail(to,subject,title,intro,rows,cta){mails.unshift({to,subject,title,intro,rows:rows||[],cta,at:new Date()});const b=$('inboxN');if(b)b.textContent=mails.length;}
+const reqRows=r=>[['Employee',who(r.pid).name+' · '+who(r.pid).dept],['Leave type',r.type],['Dates',r.start===r.end?long(r.start):long(r.start)+' to '+long(r.end)],['Working days',num(r.days)],['Back at work',long(nextWork(r.end))]];
+
+/* ---------- balances ---------- */
+function bal(pid,type){
+  const t=TYPES.find(x=>x.name===type),mine=reqs.filter(r=>r.pid===pid&&r.type===type&&r.start.slice(0,4)===YEAR);
+  const used=sum(mine.filter(r=>r.status==='Approved')),pend=sum(mine.filter(r=>PEND.includes(r.status)));
+  return {used,pend,total:t.ent,rem:t.ent==null?null:t.ent-used-pend};
+}
+
+/* ---------- shell ---------- */
+function shell(inner){
+  return `<header><div class="brand">${logo()}<span>Leave Desk</span></div><div class="right">
+    <div class="seg"><button class="${view==='me'?'on':''}" onclick="go('me')">My leave</button><button class="${view==='admin'?'on':''}" onclick="go('admin')">Admin</button></div>
+    <button class="iconbtn" onclick="openInbox()" title="Demo inbox">✉ <span id="inboxN">${mails.length}</span></button>
+    <button class="iconbtn" onclick="startTour(false)" title="Show the guide">?</button>
+    <button class="iconbtn" id="tTheme" onclick="toggleTheme()" title="Switch theme"><svg width="16" height="16" viewBox="0 0 16 16" style="vertical-align:-3px"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5a6.5 6.5 0 0 1 0 13z" fill="currentColor"/></svg></button>
+    <span class="sub">${esc(ME.name)}</span><div class="avatar">C</div></div></header>${inner}
+    <footer>Portfolio demo with fictional data. In production this runs on Google Apps Script, Google Sheets, Gmail and Google Calendar, with sign-in restricted to company work emails.</footer>`;
+}
+function go(v){view=v;OPEN=null;render();window.scrollTo({top:0});}
+function render(){$('app').innerHTML=shell(view==='me'?meView():adminView());if(view==='me')calc();else drawPeople();}
+
+/* ---------- employee view ---------- */
+function meView(){
+  const away=reqs.filter(r=>r.status==='Approved'&&r.start<=addDays(TODAY,7)&&r.end>=TODAY);
+  const mine=reqs.filter(r=>r.pid===ME.id).sort((a,b)=>b.submitted<a.submitted?-1:1).slice(0,12);
+  return `<div class="hero">${flo()}<div class="bubble" id="say">Hi <b>Chidera</b>! I’m Flo. Tap a leave type to see your balance, then fill in the form to request time off.</div></div>
+  <div class="grid tiles" id="tTiles">${TYPES.map(t=>{const b=bal(ME.id,t.name),pct=t.ent?Math.min(100,(b.used+b.pend)/t.ent*100):0;
+    return `<div class="card tile ${t.name===SEL?'sel':''}" onclick="pick('${t.name}')"><div class="name">${t.name}</div><div class="big">${t.ent==null?'—':num(b.rem)}</div><div class="sub">${t.ent==null?'no fixed limit':'days remaining'}</div><div class="bar"><i style="width:${pct}%"></i></div><div class="meta"><span>Used ${num(b.used)}</span><span>Pending ${num(b.pend)}</span><span>Total ${t.ent==null?'—':t.ent}</span></div></div>`;}).join('')}</div>
+  <div class="grid two"><div class="card" id="tForm"><h3 id="formTitle">Request leave</h3>
+    <label>Leave type</label><select id="type" onchange="pick(this.value)">${TYPES.map(t=>`<option ${t.name===SEL?'selected':''}>${t.name}</option>`).join('')}</select>
+    <div class="row"><div><label>First day absent</label><input type="date" id="start" min="${TODAY}" onchange="calc()"></div><div><label>Last day absent</label><input type="date" id="end" min="${TODAY}" onchange="calc()"></div></div>
+    <label class="chk"><input type="checkbox" id="half" onchange="calc()"> Half day only (single day)</label>
+    <div class="dur"><span>Working days</span><b id="dur">0 days</b></div>
+    <label>Reason <span id="rn"></span></label><textarea id="reason" placeholder="Briefly explain the reason for your leave"></textarea>
+    <label>Cover person (they’ll be asked to confirm)</label><select id="cover"><option value="">No cover person</option>${PEOPLE.filter(p=>p.id!==ME.id).map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+    <details id="hoBox" style="margin-top:14px"><summary style="cursor:pointer;color:var(--blue);font-weight:600">Handover notes (recommended)</summary><label>Active tasks</label><textarea id="h_tasks" placeholder="What is in progress right now?"></textarea></details>
+    <div class="err" id="err"></div><button class="btn" id="go" onclick="send()">Send request</button></div>
+  <div class="grid" style="align-content:start"><div class="card" id="tAway"><h3>Who’s away · next 7 days</h3>${away.length?away.map(r=>`<div class="item"><div>${who(r.pid).name}</div><div class="sub">${rng(r.start,r.end)}</div></div>`).join(''):'<div class="sub">Everyone is in. 🎉</div>'}</div></div></div>
+  <div class="card" id="tReq" style="margin-top:14px"><h3>My requests</h3>${mine.map((r,i)=>{
+    let a='';if(r.status==='Changes Requested')a+=`<div><button class="mini" onclick="editReq('${r.id}')">Edit &amp; resubmit</button></div>`;
+    if(PEND.includes(r.status))a+=`<div><button class="mini" onclick="withdraw('${r.id}')">Withdraw</button></div>`;
+    if(r.status==='Approved'&&r.start>TODAY)a+=`<div><button class="mini" onclick="cancelLeave('${r.id}')">Cancel leave</button></div>`;
+    return `<div class="item"><div><div>${r.type} · ${num(r.days)} day${r.days===1?'':'s'}</div><div class="sub">${rng(r.start,r.end)} · ${r.id}${r.cover?' · Cover pending':''}${r.comment?' · “'+esc(r.comment)+'”':''}</div></div><div style="text-align:right"><span class="pill ${pillCls(r.status)}">${pillTxt(r.status)}</span>${a}</div></div>`;}).join('')}</div>`;
+}
+function say(h){const b=$('say');if(b)b.innerHTML=h;}
+function pick(t){SEL=t;if(view!=='me')return;document.querySelectorAll('.tile').forEach((el,i)=>el.classList.toggle('sel',TYPES[i].name===t));$('type').value=t;
+  const ty=TYPES.find(x=>x.name===t),b=bal(ME.id,t);$('rn').textContent=ty.reason?'(required)':'(optional)';
+  say(`Great choice. ${ty.ent!=null?`You have <b>${num(b.rem)} day${b.rem===1?'':'s'}</b> of ${t} left. `:''}Now pick your dates, and I’ll skip weekends and public holidays for you.`);calc();}
+function calc(){
+  const s=$('start'),e=$('end'),h=$('half');if(!s)return;
+  if(s.value&&(!e.value||e.value<s.value))e.value=s.value;if(s.value)e.min=s.value;if(h.checked&&s.value)e.value=s.value;
+  let n=s.value&&e.value?workDays(s.value,e.value):0;if(h.checked&&n>0)n=.5;$('dur').textContent=num(n)+(n===1?' day':' days');
+  const ty=TYPES.find(x=>x.name===SEL),b=bal(ME.id,SEL);$('rn').textContent=ty.reason?'(required)':'(optional)';
+  if(s.value&&e.value){if(n===0)say('Those dates fall on a weekend or public holiday, so no leave is needed.');
+    else say(`That’s <b>${num(n)} working day${n===1?'':'s'}</b>.${ty.ent!=null?` You’ll have <b>${num(b.rem-n)}</b> left if it’s approved.`:''} Add a reason and hit send!`);}
+}
+function fail(m){const e=$('err');e.textContent=m;e.style.display='block';say('Almost there! Just one thing to fix: '+esc(m));}
+function send(){
+  $('err').style.display='none';
+  const type=SEL,s=$('start').value,e=$('end').value,half=$('half').checked,reason=$('reason').value.trim(),cover=+$('cover').value||0,ty=TYPES.find(x=>x.name===type);
+  if(!s||!e)return fail('Please choose both dates.');
+  if(e<s)return fail('The last day cannot be before the first day.');
+  if(s<TODAY&&type!=='Sick Leave')return fail('Leave cannot start in the past. For sick leave you can backdate.');
+  let days=workDays(s,e);if(!days)return fail('Those dates are weekends or public holidays, so no leave is needed.');if(half){if(s!==e)return fail('Half days are only available for a single day.');days=.5;}
+  if(ty.reason&&reason.length<5)return fail('Please add a short reason for this leave.');
+  if(type==='Annual Leave'&&(parse(s)-parse(TODAY))/864e5<14)return fail('Annual leave needs at least 14 days notice.');
+  if(reqs.some(r=>r.pid===ME.id&&r.id!==EDIT&&(PEND.includes(r.status)||r.status==='Approved')&&r.start<=e&&r.end>=s))return fail('You already have a request that overlaps these dates.');
+  const b=bal(ME.id,type),back=EDIT?(reqs.find(r=>r.id===EDIT)||{days:0}).days:0;
+  if(ty.ent!=null&&days>b.rem+back)return fail(`You only have ${num(b.rem)} day(s) of ${type} left, including pending requests.`);
+  const flags=days>10?'Over 10 days: final approval needed':'';
+  if(EDIT){const o=reqs.find(r=>r.id===EDIT);o.status='Withdrawn';o.comment='Replaced by a new request';}
+  mk(ME.id,type,0,1,days>10?'Pending Final Approval':'Pending',{start:s,end:e,days,reason,cover,flags,submitted:TODAY});
+  const r=reqs[reqs.length-1];
+  mail('Approver','Leave request for your review: '+ME.name+' ('+r.id+')','Leave request for your review',ME.name+' has requested leave. Open the request to approve or decline it.',reqRows(r).concat(reason?[['Reason',reason]]:[]),'Review request');
+  if(cover)mail(who(cover).name,'Can you cover for '+ME.name+'?','Can you cover while Chidera is away?','Their leave is still waiting for approval, so please confirm whether you are able to help.',reqRows(r).slice(1),'Review and respond');
+  EDIT=null;toast('Request '+r.id+' sent ✔  (approver email added to the demo inbox)');render();
+  setTimeout(()=>say('All done! Your request is with the approver now. Switch to <b>Admin</b> to approve it yourself and watch the email arrive.'),50);
+}
+function editReq(id){const r=reqs.find(x=>x.id===id);EDIT=id;pick(r.type);$('start').value=r.start;$('end').value=r.end;$('half').checked=r.days===.5;$('reason').value=r.reason||'';
+  $('formTitle').innerHTML='Editing '+r.id+' <button class="mini" onclick="EDIT=null;render()">Stop editing</button>';$('go').textContent='Resubmit request';calc();
+  say('Your approver asked for a change: <b>“'+esc(r.comment)+'”</b>. Update the form and resubmit.');$('formTitle').scrollIntoView({behavior:'smooth'});}
+function withdraw(id){const r=reqs.find(x=>x.id===id);r.status='Withdrawn';mail('Approver','Request withdrawn: '+ME.name+' ('+r.id+')','Request withdrawn',ME.name+' withdrew this request before it was decided. No action needed.',reqRows(r));toast('Request withdrawn.');render();}
+function cancelLeave(id){const r=reqs.find(x=>x.id===id);r.status='Cancelled';mail('Admins','Approved leave cancelled: '+ME.name+' ('+r.id+')','Approved leave cancelled',ME.name+' cancelled approved leave. The days are back in their balance and the calendar event is removed.',reqRows(r));toast('Leave cancelled. '+num(r.days)+' days returned to your balance.');render();}
+
+/* ---------- admin view ---------- */
+function adminData(m){
+  const d=parse(TODAY);d.setMonth(d.getMonth()-m);const from=iso(d);
+  const ap=reqs.filter(r=>r.status==='Approved'),inP=ap.filter(r=>r.start>=from&&r.start<=TODAY);
+  const agg=f=>{const o={};inP.forEach(r=>{const k=f(r);o[k]=(o[k]||0)+r.days;});return Object.keys(o).map(k=>({label:k,days:o[k]})).sort((a,b)=>b.days-a.days);};
+  return {from,inP,away:ap.filter(r=>r.start<=TODAY&&r.end>=TODAY),ret:ap.filter(r=>r.start<=TODAY&&r.end>=TODAY&&r.end<=addDays(TODAY,5)),
+    up:ap.filter(r=>r.start>TODAY&&r.start<=addDays(TODAY,30)).sort((a,b)=>a.start<b.start?-1:1),
+    pend:reqs.filter(r=>r.status==='Pending'||r.status==='Pending Final Approval').sort((a,b)=>a.submitted<b.submitted?-1:1),
+    byType:agg(r=>r.type),byDept:agg(r=>who(r.pid).dept)};
+}
+const bars=(l,e)=>l.length?`<div class="bars">${l.map(x=>`<div class="bb"><div class="t"><span>${esc(x.label)}</span><b>${num(x.days)} days</b></div><div class="tr"><i style="width:${x.days/l[0].days*100}%"></i></div></div>`).join('')}</div>`:`<div class="sub">${e}</div>`;
+const plist=(l,e)=>l.length?l.map(r=>`<div class="item"><div><div>${who(r.pid).name}</div><div class="sub">${who(r.pid).dept} · ${r.type}</div></div><div class="sub" style="text-align:right">${rng(r.start,r.end)}<br>back ${fmt(nextWork(r.end))}</div></div>`).join(''):`<div class="sub">${e}</div>`;
+function adminView(){
+  const D=adminData(months),lbl={1:'Last month',3:'Last 3 months',6:'Last 6 months',12:'Last year'};
+  return `<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:14px"><div class="sub">Signed in as an admin with approver rights (demo). Leave that started between ${fmt(D.from)} and ${fmt(TODAY)}</div>
+    <div class="seg">${[[1,'1 month'],[3,'3 months'],[6,'6 months'],[12,'1 year']].map(p=>`<button class="${months===p[0]?'on':''}" onclick="months=${p[0]};render()">${p[1]}</button>`).join('')}</div></div>
+  <div class="grid kpis"><div class="card kpi hl"><div class="l">Waiting for a decision</div><div class="n">${D.pend.length}</div><div class="l">pending requests</div></div>
+    <div class="card kpi"><div class="l">Away today</div><div class="n">${D.away.length}</div><div class="l">people on leave</div></div>
+    <div class="card kpi"><div class="l">Returning within 5 days</div><div class="n">${D.ret.length}</div><div class="l">welcome-back soon</div></div>
+    <div class="card kpi"><div class="l">Leave taken · ${lbl[months]}</div><div class="n">${num(sum(D.inP))}</div><div class="l">days across ${D.inP.length} request${D.inP.length===1?'':'s'}</div></div></div>
+  <div class="card" style="margin-top:14px" id="aPend"><h3>Pending requests <span class="sub">oldest first</span></h3>${D.pend.length?D.pend.map((r,i)=>{
+    const w=Math.max(0,Math.round((parse(TODAY)-parse(r.submitted))/864e5));
+    return `<div class="item" style="align-items:flex-start"><div style="flex:1;min-width:0"><div><b>${who(r.pid).name}</b> · ${r.type} · ${num(r.days)} day${r.days===1?'':'s'}</div><div class="sub">${who(r.pid).dept} · ${rng(r.start,r.end)} · requested ${w?w+' day'+(w===1?'':'s')+' ago':'today'}</div>
+      ${r.reason?`<div class="sub">“${esc(r.reason)}”</div>`:''}${r.flags?`<div class="flag">⚠ ${esc(r.flags)}</div>`:''}
+      <div class="act" id="act${i}" style="${OPEN===r.id?'display:block':''}"><textarea id="note${i}" placeholder="Comment (required if declining or asking for changes)"></textarea><div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap"><button class="b b-ok" onclick="decide('${r.id}',${i},'approve')">Approve</button><button class="b b-soft" onclick="decide('${r.id}',${i},'changes')">Ask for changes</button><button class="b b-no" onclick="decide('${r.id}',${i},'decline')">Decline</button></div><div class="err" id="err${i}"></div></div></div>
+      <div style="text-align:right"><span class="pill ${r.status==='Pending Final Approval'?'p-final':'p-pend'}">${r.status==='Pending Final Approval'?'FINAL APPROVAL':'PENDING'}</span><div style="margin-top:8px"><button class="b b-soft" onclick="OPEN='${r.id}';render()">Review</button></div></div></div>`;}).join(''):'<div class="sub">All caught up. No pending requests. 🎉</div>'}</div>
+  <div class="grid two even"><div class="card"><h3>Away today</h3>${plist(D.away,'Everyone is in today.')}</div><div class="card"><h3>Returning within 5 days</h3>${plist(D.ret,'No one is due back in the next 5 days.')}</div></div>
+  <div class="card" style="margin-top:14px"><h3>Upcoming leave <span class="sub">next 30 days</span></h3>${plist(D.up,'No approved leave coming up.')}</div>
+  <div class="grid two even"><div class="card"><h3>By leave type <span class="sub">${lbl[months]}</span></h3>${bars(D.byType,'No leave taken in this period.')}</div><div class="card"><h3>By department <span class="sub">${lbl[months]}</span></h3>${bars(D.byDept,'No leave taken in this period.')}</div></div>
+  <div class="card" style="margin-top:14px"><h3>People <span class="sub">${lbl[months]}</span></h3><input id="q" placeholder="Search by name or department" oninput="drawPeople()"><div class="scroll" id="ptab"></div></div>`;
+}
+function drawPeople(){
+  const D=adminData(months),q=($('q')||{value:''}).value.toLowerCase(),t={},c={};D.inP.forEach(r=>{t[r.pid]=(t[r.pid]||0)+r.days;c[r.pid]=(c[r.pid]||0)+1;});
+  const rows=PEOPLE.filter(p=>(p.name+' '+p.dept).toLowerCase().includes(q)).map(p=>({p,taken:t[p.id]||0,count:c[p.id]||0,left:bal(p.id,'Annual Leave').rem})).sort((a,b)=>b.taken-a.taken);
+  $('ptab').innerHTML='<table><tr><th>Name</th><th>Department</th><th class="r">Requests</th><th class="r">Days taken</th><th class="r">Annual left</th></tr>'+(rows.length?rows.map(x=>`<tr><td>${x.p.name}</td><td>${x.p.dept}</td><td class="r">${x.count}</td><td class="r">${num(x.taken)}</td><td class="r">${num(x.left)}</td></tr>`).join(''):'<tr><td colspan="5" class="sub">No matches.</td></tr>')+'</table>';
+}
+function decide(id,i,how){
+  const note=$('note'+i).value.trim(),er=$('err'+i),r=reqs.find(x=>x.id===id);er.style.display='none';
+  if(how!=='approve'&&note.length<5){er.textContent='Please add a short comment so the employee understands.';er.style.display='block';return;}
+  const p=who(r.pid),rows=reqRows(r);let t,i2;
+  if(how==='approve'){r.status='Approved';r.comment=note;t='Your leave is approved ✅';i2='Good news, '+p.name.split(' ')[0]+'. Your '+r.type.toLowerCase()+' request has been approved. Enjoy the time off!'+(note?' Note from your approver: '+note:'');}
+  else if(how==='changes'){r.status='Changes Requested';r.comment=note;t='Changes needed on your leave request';i2='Your approver would like a small change before deciding. What to change: '+note;}
+  else{r.status='Declined';r.comment=note;t='Your leave request was not approved';i2='Your request could not be approved this time. Reason: '+note;}
+  mail(p.name,({approve:'Approved: ',changes:'Changes requested: ',decline:'Not approved: '})[how]+r.id,t,i2,rows,'Open my leave dashboard');
+  if(how==='approve')mail('Admin team','Leave approved: '+p.name+' ('+r.id+')','Leave approved','For your records: this leave has been approved and added to the team calendar.',rows.concat([['Reason','Hidden from this notice on purpose']]),'Open admin dashboard');
+  OPEN=null;toast(({approve:'Approved',changes:'Sent back for changes',decline:'Declined'})[how]+'. '+p.name.split(' ')[0]+' has been emailed (see the demo inbox).');render();drawPeople();
+}
+
+/* ---------- demo inbox ---------- */
+function openInbox(){
+  $('drawer').innerHTML=`<div class="dh"><span>Demo inbox</span><button class="iconbtn" onclick="$('drawer').classList.remove('open')">✕</button></div><div class="dl" id="dl">${mails.length?mails.map((m,i)=>`<div class="mail" onclick="showMail(${i})"><div class="s">${esc(m.subject)}</div><div class="t2">To: ${esc(m.to)} · ${m.at.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</div><div id="mv${i}"></div></div>`).join(''):'<p class="sub">No emails yet. Send a request or approve one and the emails the real system sends will appear here.</p>'}</div>`;
+  $('drawer').classList.add('open');
+}
+function showMail(i){const m=mails[i],el=$('mv'+i);if(el.innerHTML){el.innerHTML='';return;}
+  el.innerHTML=`<div class="mailview"><div class="em"><div style="color:#2390F8;font-weight:700;font-size:12px;letter-spacing:.08em">LEAVE DESK</div><h2>${esc(m.title)}</h2><p>${esc(m.intro)}</p><table style="width:100%;border-collapse:collapse;font-size:14px">${m.rows.map(r=>`<tr><td class="k">${esc(r[0])}</td><td class="v">${esc(r[1])}</td></tr>`).join('')}</table>${m.cta?`<span class="cta">${esc(m.cta)}</span>`:''}</div></div>`;}
+
+/* ---------- guided tour ---------- */
+const TOUR=[
+  {v:'me',t:null,title:'Welcome to Leave Desk 👋',text:'Hi Chidera! I’m Flo. This quick tour shows you the whole system in about a minute.'},
+  {v:'me',t:'tTiles',title:'Your leave balances',text:'Each tile is a leave type, showing days left after approved and pending requests. Tap one to pick it.'},
+  {v:'me',t:'tForm',title:'Request leave here',text:'Choose the type and dates. Working days are counted live, skipping weekends and public holidays. Half days work too.'},
+  {v:'me',t:'hoBox',title:'Handover and cover',text:'Add handover notes and name a cover person. They get an email to confirm, and the approver sees it all.'},
+  {v:'me',t:'tReq',title:'Track your requests',text:'Withdraw a pending request, edit and resubmit when changes are requested, or cancel approved leave that hasn’t started.'},
+  {v:'admin',t:'aPend',title:'Admins: pending requests',text:'Approvers review each request here and approve, decline or ask for changes, with a required comment. The employee is emailed straight away.'},
+  {v:'me',t:'tTheme',title:'Dark or light',text:'Switch themes any time. The ? button brings this guide back, and the envelope shows every email the system would send.'},
+  {v:'me',t:null,title:'You’re all set! 🎉',text:'Send a request, then switch to Admin to approve it and watch the emails appear in the inbox.'}];
+const clearSpot=()=>document.querySelectorAll('.spot').forEach(e=>e.classList.remove('spot'));
+function startTour(first){tourFirst=first;tourI=0;drawTour();}
+function drawTour(){
+  clearSpot();const s=TOUR[tourI],last=tourI===TOUR.length-1;if(view!==s.v){view=s.v;render();}
+  let b=$('tourBack');if(!b){b=document.createElement('div');b.id='tourBack';document.body.appendChild(b);}
+  let p=$('tour');if(!p){p=document.createElement('div');p.id='tour';document.body.appendChild(p);}
+  p.innerHTML=flo()+`<div style="flex:1"><div class="tt">${esc(s.title)}</div><div class="tx">${esc(s.text)}</div><div class="dots">${TOUR.map((_,i)=>`<i class="${i===tourI?'on':''}"></i>`).join('')}</div><div class="tb">${tourFirst?'':'<button class="cl" onclick="endTour()">Close</button>'}${tourI?'<button class="bk" onclick="tourGo(-1)">Back</button>':''}<button class="nx" onclick="tourGo(1)">${last?(tourFirst?'Let’s go':'Done'):'Next'}</button></div></div>`;
+  const el=s.t?$(s.t):null;if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'start'});}else window.scrollTo({top:0,behavior:'smooth'});
+}
+function tourGo(d){if(d>0&&tourI===TOUR.length-1)return endTour();tourI=Math.max(0,Math.min(TOUR.length-1,tourI+d));drawTour();}
+function endTour(){clearSpot();['tourBack','tour'].forEach(id=>{const e=$(id);if(e)e.remove();});view='me';render();window.scrollTo({top:0});try{localStorage.setItem('ld-tour','1');}catch(e){}}
+
+render();
+if(!tdone)startTour(true);
+</script>
+</body>
+</html>
